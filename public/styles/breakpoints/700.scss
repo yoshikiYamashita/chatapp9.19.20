@@ -1,0 +1,73 @@
+
+header {
+  height: 60px;
+  font-size: 17px;
+
+  .app-title{
+    h1 {
+      margin: 0 30px;
+    }
+  }
+  ul {
+    padding-right: 20px;
+
+    li {
+      margin: 0 20px;
+    }
+  }
+}
+
+.main {
+  min-height: calc( 100% - 60px - 60px);
+  .main-left {
+    font-size: 13px;
+    .status-controls, .sort-controls {
+      ul {
+        li {
+          &:hover {
+            &::after{
+              height: 13px;
+            }
+          }
+        }
+      }
+    }
+
+
+
+
+    .createroom-btn {
+      font-size: 13px;
+      margin: 25px auto;
+    }
+  }
+
+  .main-right {
+    .chatroom {
+    h1 {
+        margin: 12px;
+      }
+      p {
+        margin: 11px;
+      }
+    }
+  }
+}
+
+
+.room-main {
+  width: 80%;
+}
+
+.main-content {
+  .profile {
+    .your-roomlist {
+      flex-direction: column;
+      justify-content: center;
+      .chatroom {
+        width: 85%;
+        margin: 10px auto;
+      }
+    }
+  }
+}

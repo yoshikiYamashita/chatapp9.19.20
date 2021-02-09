@@ -1,0 +1,404 @@
+<%- include('partials/header') -%>
+
+
+<div class="main">
+  <div class="main-left">
+
+    <!-- for mobile -->
+    <% if(user){ %>
+      <button class="createroom-btn-mobile">Create a new room</button>
+    <% } %>
+
+    <select class="status-controls-mobile">
+      <optgroup label="Room status">
+        <option class="status-option active"  data-statusoption="active">Active</option>
+        <option class="status-option" data-statusoption="archived">Archived</option>
+        <% if(user){ %> 
+        <option class="status-option" data-statusoption="saved">Saved</option>
+        <% } %> 
+      </optgroup>
+    </select>
+    <select class="sort-controls-mobile">
+      <optgroup label="Sort by">
+        <option class="sort-option active" data-sortoption="lastUpdated">Last updated</option>
+        <option class="sort-option" data-sortoption="lastCreated">Last created</option>
+        <option class="sort-option" data-sortoption="mostComments">Most comments</option>
+      </optgroup>
+    </select>
+    <!-- for mobile -->
+
+    <div class="status-controls">
+      <h1>Room status</h1>
+      <ul>
+        <li class="status-option active"  data-statusoption="active">Active</li>
+        <li class="status-option" data-statusoption="archived">Archived</li>
+        <% if(user){ %>
+          <li class="status-option" data-statusoption="saved">Saved</li>
+        <% } %>
+      </ul>
+    </div>
+    <!-- <hr> -->
+    <div class="sort-controls">
+      <h1>Sort by</h1>
+      <ul>
+        <li class="sort-option active" data-sortoption="lastUpdated">Last updated</li>
+        <li class="sort-option" data-sortoption="lastCreated">Last created</li>
+        <li class="sort-option" data-sortoption="mostComments">Most comments</li>
+      </ul>
+    </div>
+    <hr>
+    <% if(user){ %>
+      <button class="createroom-btn">Create a new room</button>
+    <% } %>
+
+  </div>
+
+  <div class="main-right chatroom-list">
+  </div>
+
+</div>
+
+
+<div class="form-display">
+
+  <form action="" class="signup-form">
+    <span class="close-btn">close</span>
+    <h1> Sign up </h1>
+    <label for="email">Email:</label>
+    <input type="text" name="email" required placeholder=" required">
+    <div class ="error email"></div>
+    <label for="password">Password:</label>
+    <input type="password" name="password" required placeholder=" required">
+    <div class="error password"></div>
+    <label for="userName">Username:</label>
+    <input type="text" name="userName" required placeholder=" required">
+    <div class="error user-name"></div>
+    <button>Sign up</button>
+  </form>
+
+  <form class="login-form">
+    <span class="close-btn">close</span>
+    <h1>Log in</h1>
+    <label for="email">Email:</label>
+    <input type="text" name="email" required>
+    <div class ="error email"></div>
+    <label for="password">Password:</label>
+    <input type="password" name="password" required>
+    <div class="error password"></div>
+    <button>Log in</button>
+  </form>
+
+  <form class="createroom-form">
+    <span class="close-btn">close</span>
+    <h1>Create a new room</h1>
+    <label for="title">Title:</label>
+    <input type="text" name="title" required placeholder=" required" maxlength="30">
+    <br>
+    <label for="description">Description:</label>
+    <input type="text" name="description" maxlength="30" placeholder=" optional" >
+    <br>
+    <button>Create</button>
+  </form>
+
+</div>
+
+
+
+
+
+
+
+<!-- moment.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.0/moment.min.js" integrity="sha512-Izh34nqeeR7/nwthfeE0SI3c8uhFSnqxV0sI9TvTcXiFJkMd6fB644O64BRq2P/LA/+7eRvCw4GmLsXksyTHBg==" crossorigin="anonymous"></script>
+
+<script>
+  const userData = <%- JSON.stringify(user) %>;
+  console.log(userData, 'user data');
+
+  //change sort options
+  const sortOptions = document.querySelectorAll('.sort-option');
+  sortOptions.forEach(option => {
+    option.addEventListener('click', () => {
+      sortOptions.forEach(option => {
+        option.classList.remove('active');
+      });
+      option.classList.add('active');
+      updateRoomList();
+    });
+  });
+  //sort option mobile
+  const sortSelection = document.querySelector('.sort-controls-mobile');
+  sortSelection.addEventListener('change', function(){
+    sortOptions.forEach(option => {
+      option.classList.remove('active');
+    })
+    let selectedOption = sortOptions[this.selectedIndex];
+    selectedOption.classList.add('active');
+    updateRoomList();
+  })
+
+
+  // room status
+  let statusOption = 'active';
+  const statusOptions = document.querySelectorAll('.status-option');
+  statusOptions.forEach(option => {
+    option.addEventListener('click', () => {
+      statusOptions.forEach(option => {
+        option.classList.remove('active');
+      });
+      option.classList.add('active');
+      statusOption = option.dataset.statusoption;
+      updateRoomList();
+    })
+  })
+  //status option mobile
+  const statusSelectionMobile = document.querySelector('.status-controls-mobile');
+  const statusOptionsMobile = document.querySelectorAll('.status-controls-mobile option');
+  statusSelectionMobile.addEventListener('change', function() {
+    statusOptions.forEach(option => {
+      option.classList.remove('active');
+    });
+    statusOptionsMobile[this.selectedIndex].classList.add('active');
+    statusOption = statusOptionsMobile[this.selectedIndex].dataset.statusoption;
+    updateRoomList();
+  })
+
+
+
+
+  //reset room list
+  const roomList = document.querySelector('.chatroom-list');
+  
+  async function updateRoomList() {
+    let sortOption = document.querySelector('.sort-option.active').dataset.sortoption;
+
+    if(statusOption === "saved"){
+      statusOption = userData._id;
+      }
+      const data = await fetch(`/getroomlist/${statusOption}`);
+      const chatrooms = await data.json();
+      console.log(chatrooms);
+
+      // sort
+      if(sortOption === "lastUpdated") {
+        chatrooms.sort(function(a,b){
+          return new Date(b.lastUpdatedDate) - new Date(a.lastUpdatedDate)
+        });
+      } else if (sortOption === "lastCreated") {
+        chatrooms.sort(function(a, b){
+          return new Date(b.createdDate) - new Date(a.createdDate)
+        });
+      } else if (sortOption === "mostComments") {
+        chatrooms.sort(function(a, b) {
+          return b.comments.length - a.comments.length;
+        });
+      }
+
+      roomList.innerHTML = '';
+
+      if (chatrooms.length > 0) {
+        chatrooms.forEach(chatroom => {
+          const createdDate = moment(chatroom.createdDate).format('DD MMM YYYY');
+          const lastupdatedDate = moment(chatroom.lastUpdatedDate).fromNow();
+          const numberOfComments = chatroom.comments.length;
+          const id = chatroom._id.toString();
+          let trimmedTitle = chatroom.title;
+          if (chatroom.title.length > 18) {
+            trimmedTitle = chatroom.title.slice(0, 18) + '...';
+          }
+          const chatroomData = 
+          `<div class="chatroom" data-chatroomId="${chatroom._id}">
+              <h1>${trimmedTitle}</h1>
+              <p>comments: ${numberOfComments}</p>
+              <p>${chatroom.roomMember.length} online</p>
+              <p>last update: ${lastupdatedDate}</p>
+              <p>created by ${chatroom.auther.authersName}</p>
+          </div>`;
+          roomList.innerHTML += chatroomData;
+        });
+
+        //click events requiring auth
+        const lists = document.querySelectorAll('.chatroom');
+        lists.forEach(chatroom => {
+          chatroom.addEventListener('click', function() {
+            if (!userData) {
+              const loginForm = document.querySelector('.login-form');
+              const formDisplay = document.querySelector('.form-display');
+              loginForm.style.display = 'block';
+              formDisplay.style.zIndex = '10';
+            } else {
+              location.assign(`/chatroom/${this.dataset.chatroomid}`)
+            }
+          });
+        });
+      } else {
+        const msg = '<p class="no-result" >No rooms to display.</p>';
+        roomList.innerHTML += msg;
+      }
+      console.log('roomlist updated');
+
+
+  }
+  
+  updateRoomList();
+  setInterval(updateRoomList, 30000);
+
+
+  //create a new room
+  if(userData) {
+    const createroomBtn = document.querySelector('.createroom-btn');
+    const createroomBtnMobile = document.querySelector('.createroom-btn-mobile');
+    const createroomForm = document.querySelector('.createroom-form');
+    const formDisplay = document.querySelector('.form-display');
+  
+    createroomBtn.addEventListener('click', () => {
+      formDisplay.style.zIndex = '10';
+      createroomForm.style.display = 'block';
+    });
+
+    createroomBtnMobile.addEventListener('click', () => {
+      formDisplay.style.zIndex ='10';
+      createroomForm.style.display = 'block';
+    });
+  
+    createroomForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const title = createroomForm.title.value;
+      const description = createroomForm.description.value;
+  
+      try{
+        const res = await fetch('/createchatroom', {
+          method: 'POST',
+          body: JSON.stringify({title, description, userData}),
+          headers: {'Content-Type': 'application/json'}
+        });
+        const data = await res.json();
+        if(data.chatroom){
+          location.assign(`/chatroom/${data.chatroom._id}`);
+        }
+      }
+      catch(err){
+        console.log(err);
+      }
+    });
+    const closeBtn = document.querySelector('.createroom-form > .close-btn');
+    closeBtn.addEventListener('click', () => {
+      formDisplay.style.zIndex = '-1';
+      createroomForm.style.display = 'none';
+    });
+  }
+
+  //login events
+  if(!userData){
+    const loginBtn = document.querySelector('.login-btn');
+    const loginForm = document.querySelector('.login-form');
+    const formDisplay = document.querySelector('.form-display');
+
+    loginBtn.addEventListener('click', () => {
+      loginForm.style.display = 'block';
+      formDisplay.style.zIndex = "10";
+    });
+    
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const emailError = document.querySelector('form.login-form > .error.email');
+      const passwordError = document.querySelector('form.login-form > .error.password');
+  
+      //reset errors
+      emailError.textContent ='';
+      passwordError.textContent ='';
+  
+      //get values
+      const email = loginForm.email.value;
+      const password = loginForm.password.value;
+  
+      try {
+        const res = await fetch('/login', {
+          method: 'POST',
+          body: JSON.stringify({ email, password }),
+          headers: {'Content-Type': 'application/json'}
+        });
+        const data = await res.json();
+        // console.log({data});
+        if(data.errors){
+          emailError.textContent = data.errors.email;
+          passwordError.textContent = data.errors.password;
+        }
+        if(data.user){
+          location.assign('/');
+        }
+      }
+      catch (err) {
+        console.log(err);
+      }
+    });
+
+    const closeBtn = document.querySelector('.login-form > .close-btn');
+    closeBtn.addEventListener('click', () => {
+      formDisplay.style.zIndex = '-1';
+      loginForm.style.display = 'none';
+    });
+
+  }
+
+
+  //signup events
+  if(!userData) {
+    const signupBtn = document.querySelector('.signup-btn');
+    const signupForm = document.querySelector('.signup-form');
+    const formDisplay = document.querySelector('.form-display');
+    signupBtn.addEventListener('click', () => {
+      signupForm.style.display = 'block';
+      formDisplay.style.zIndex = '10';
+    });
+    
+    signupForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const emailError = document.querySelector('form.signup-form > .error.email');
+      const passwordError = document.querySelector('form.signup-form > .error.password');
+      const userNameError = document.querySelector('form.signup-form > .error.user-name');
+  
+      //reset errors
+      emailError.textContent ='';
+      passwordError.textContent ='';
+      userNameError.textContent = '';
+  
+      //get values
+      const email = signupForm.email.value;
+      const password = signupForm.password.value;
+      const userName = signupForm.userName.value;
+  
+      try {
+        const res = await fetch('/signup', {
+          method: 'POST',
+          body: JSON.stringify({ email, password, userName }),
+          headers: {'Content-Type': 'application/json'}
+        });
+        const data = await res.json();
+        console.log({data});
+        if(data.errors){
+          emailError.textContent = data.errors.email;
+          passwordError.textContent = data.errors.password;
+          userNameError.textContent = data.errors.userName;
+        }
+        if(data.user){
+          location.assign('/');
+        }
+      }
+      catch (err) {
+        console.log(err);
+      }
+    });
+
+    const closeBtn = document.querySelector('.signup-form > .close-btn');
+    closeBtn.addEventListener('click', () => {
+      formDisplay.style.zIndex = '-1';
+      signupForm.style.display = 'none';
+    });
+  }
+
+
+
+</script>
+
+<%- include('partials/footer') -%>

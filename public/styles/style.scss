@@ -1,0 +1,23 @@
+
+@import "breakpoints/base";
+
+
+@media (max-width: 960px) {
+  @import "breakpoints/960";
+}
+
+@media (max-width: 700px) {
+  @import "breakpoints/700";
+}
+
+@media (max-width: 600px) {
+  @import "breakpoints/600";
+}
+
+@media (max-width: 480px) {
+  @import "breakpoints/480";
+}
+
+@media (max-width: 400px) {
+  @import "breakpoints/400";
+}

@@ -1,0 +1,81 @@
+.main {
+  padding: 0;
+  display: block;
+  min-height: calc( 100% - 55px);
+}
+
+.main .main-left {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -ms-flex-pack: distribute;
+      justify-content: space-around;
+  position: static;
+}
+
+.main .main-left .status-controls-mobile, .main .main-left .sort-controls-mobile {
+  margin: 0;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  -ms-flex-preferred-size: 40%;
+      flex-basis: 40%;
+  margin: 10px 0;
+  color: #444444;
+  background-color: white;
+  border: thin solid darkgray;
+  border-radius: 4px;
+  display: inline-block;
+  line-height: 1.5em;
+  padding: 0.5em 2em 0.5em 1em;
+  background-image: linear-gradient(45deg, transparent 50%, gray 50%), linear-gradient(135deg, gray 50%, transparent 50%), linear-gradient(to right, #ccc, #ccc);
+  background-position: calc(100% - 20px) calc(1em + 2px), calc(100% - 15px) calc(1em + 2px), calc(100% - 3em) 0.5em;
+  background-size: 5px 5px, 5px 5px, 1px 1.5em;
+  background-repeat: no-repeat;
+}
+
+.main .main-left .status-controls-mobile {
+  margin-left: 20px;
+}
+
+.main .main-left .sort-controls-mobile {
+  margin-right: 20px;
+}
+
+.main .main-left .createroom-btn-mobile {
+  -ms-flex-preferred-size: 100%;
+      flex-basis: 100%;
+  margin: 20px 20px 10px 20px;
+  display: block;
+  width: 120px;
+  height: 35px;
+  background-color: orange;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  -webkit-box-shadow: 0px 0px 8px darkgray;
+          box-shadow: 0px 0px 8px darkgray;
+}
+
+.main .main-left .status-controls, .main .main-left .sort-controls {
+  display: none;
+}
+
+.main .main-left hr {
+  display: none;
+}
+
+.main .main-left .createroom-btn {
+  display: none;
+}
+
+.room-main {
+  width: 90%;
+}
+/*# sourceMappingURL=480.css.map */

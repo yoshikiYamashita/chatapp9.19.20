@@ -1,0 +1,142 @@
+<%- include('partials/header') -%>
+
+<div class="main-content">
+  <div class="profile">
+
+    <form class="change-name-form">
+      <label for="name">username:</label>
+      <input name="name" type="text" value="<%= user.userName%>">
+      <button>Change Name</button>
+    </form>
+    <div class="delete-con">
+      <button class="delete-account-btn">Delete your account</button>
+      <form class="delete-account-form">
+        <h1>Delete Your Account</h1>
+        <label for="password">Password:</label>
+        <input type="password" name="password">
+        <div class="error password"></div>
+        <button>Delete</button>
+      </form>
+    </div>
+  
+    <h1>- Rooms You Created -</h1>
+    <div class="your-roomlist">
+    <!-- insert your room data here -->
+    </div>
+
+  </div>
+
+</div>
+
+
+
+
+
+<!-- moment.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.0/moment.min.js" integrity="sha512-Izh34nqeeR7/nwthfeE0SI3c8uhFSnqxV0sI9TvTcXiFJkMd6fB644O64BRq2P/LA/+7eRvCw4GmLsXksyTHBg==" crossorigin="anonymous"></script>
+<script>
+  const userInfo = <%- JSON.stringify(user) %>;
+  const yourRooms = <%- JSON.stringify(yourRooms) %>
+  console.log(userInfo);
+  console.log(yourRooms);
+
+  const changeNameForm = document.querySelector('.change-name-form');
+  changeNameForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name = changeNameForm.name.value;
+    const res = await fetch('/changeName', {
+      method: 'POST',
+      body: JSON.stringify({name, userInfo}),
+      headers: {'Content-Type': 'application/json'}
+    });
+    const data = await res.json();
+    if ( data.msg === 'changed' ) {
+      location.reload();
+    }
+  });
+
+  const deleteCon = document.querySelector('.delete-con');
+  const deleteAccountBtn = document.querySelector('.delete-account-btn');
+  const deleteAccountForm  = document.querySelector('.delete-account-form')
+  deleteAccountBtn.addEventListener('click', () => {
+    deleteAccountBtn.style.display = 'none';
+    deleteAccountForm.style.display = ' block';
+  });
+  deleteAccountForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const password = deleteAccountForm.password.value;
+    console.log('password', password);
+    const res = await fetch('/deleteUser', {
+      method: 'DELETE', 
+      body: JSON.stringify({userInfo, password}),
+      headers: {'Content-Type': 'application/json'}
+    });
+    const data = await res.json();
+    console.log({data});
+    if(data.msg === 'incorrect password') {
+      const output = document.querySelector('.error.password');
+      output.textContent = data.msg;
+    } else if (data.msg = "user deleted") {
+      location.assign('/');
+    }
+
+  });
+
+
+
+
+  const yourRoomList = document.querySelector('.your-roomlist');
+  if(yourRooms.length > 0){
+
+    yourRooms.forEach(room => {
+      const createdDate = moment(room.createdDate).format('DD MMMM YYYY');
+      const lastUpdatedDate = moment(room.lastUpdatedDate).fromNow();
+      const DOM = `
+        <div class="chatroom" data-roomid="${room._id}">
+          <h1>title: ${room.title}</h1>
+          <p>created date: ${createdDate}</p>
+          <p>lastupdate: ${lastUpdatedDate}</p>
+          <p>comments: ${room.comments.length}</p>
+          <button class="delete-btn" data-roomId="${room._id}">Delete</button>
+        </div>
+      `;
+      yourRoomList.innerHTML += DOM;
+    });
+
+  } else if ( yourRooms.length < 1 ){
+    const DOM = "<div class='no-result'>You haven't created any</div>";
+    yourRoomList.innerHTML += DOM;
+  }
+
+  const roomsDOMs = document.querySelectorAll('.chatroom');
+  roomsDOMs.forEach(room => {
+    room.addEventListener('click', async (e) => {
+      if( e.target.className === 'chatroom' ) {
+        const id = e.target.dataset.roomid;
+        location.assign(`/chatroom/${id}`);
+      } else if ( e.target.className === 'delete-btn') {
+        const id = e.target.parentNode.dataset.roomid;
+        const res = await fetch(`/deleteChatroom`, {
+          method: 'DELETE',
+          body: JSON.stringify({
+            roomId: id,
+            userId: userInfo._id
+          }),
+          headers: { 'Content-Type': 'Application/json' }
+        });
+        const data = await res.json();
+        console.log(data.msg);
+        if( data.msg === 'room successfully deleted' ) {
+          location.reload();
+        } else if ( data.msg === 'sth went wrong') {
+          alert("couldn't delete that room");
+        }
+
+      }
+    });
+  }); 
+
+
+</script>
+
+<%- include('partials/footer') -%>

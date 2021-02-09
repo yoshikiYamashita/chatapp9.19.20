@@ -1,0 +1,57 @@
+header {
+  font-size: 20px;
+  height: 70px;
+}
+
+header .app-title h1 {
+  margin: 0 40px;
+}
+
+header ul {
+  padding-right: 30px;
+}
+
+header ul li {
+  margin: 0 30px;
+}
+
+.main {
+  min-height: calc( 100% - 70px - 60px);
+}
+
+.main .main-left {
+  font-size: 15px;
+}
+
+.main .main-left .status-controls ul li:hover::after, .main .main-left .sort-controls ul li:hover::after {
+  height: 15px;
+}
+
+.main .main-left .createroom-btn {
+  font-size: 15px;
+}
+
+.main .main-right .chatroom {
+  -ms-flex-preferred-size: 87%;
+      flex-basis: 87%;
+  margin: 12px 0;
+  height: 130px;
+}
+
+.main .main-right .chatroom h1 {
+  margin: 12px;
+}
+
+.main .main-right .chatroom p {
+  margin: 11px;
+}
+
+.form-display form h1 {
+  margin-left: 50px;
+  font-size: 30px;
+}
+
+.room-main {
+  width: 75%;
+}
+/*# sourceMappingURL=960.css.map */

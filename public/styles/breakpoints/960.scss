@@ -1,0 +1,80 @@
+
+header {
+  font-size: 20px;
+  height: 70px;
+  .app-title {
+    h1 {
+      margin: 0 40px;
+    }
+  }
+
+  ul{
+    padding-right: 30px;
+
+    li {
+      margin: 0 30px;
+    }
+  }
+}
+
+.main {
+  min-height: calc( 100% - 70px - 60px);
+  .main-left {
+    font-size: 15px;
+
+    .status-controls, .sort-controls  {
+      ul {
+        li {
+          &:hover {
+            &::after {
+              height: 15px;
+            }
+          }
+        }
+      }
+    }
+
+
+    .createroom-btn {
+      font-size: 15px;
+    }
+  }
+
+  .main-right {
+    .chatroom {
+      flex-basis: 87%;
+      margin: 12px 0;
+      height: 130px;
+      h1 {
+        margin: 12px;
+      }
+      p {
+        margin: 11px;
+      }
+      
+    }
+  }
+
+}
+
+
+.form-display {
+  form {
+    h1 {
+      margin-left: 50px;
+      font-size: 30px;
+    }
+  }
+}
+
+
+
+//new work
+.room-main {
+  width: 75%; //originally 65%
+
+  // .comment-input {
+  //   width: 70%; 
+  //   originally 80%
+  // }
+}

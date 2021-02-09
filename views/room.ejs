@@ -1,0 +1,357 @@
+<%- include('partials/header') -%>
+
+<div class="room-main">
+  <div class="room-info">
+    <h1 class="title"></h1>
+    <div class="second-line">
+      <div class="user-number"></div>
+      <div class="comment-number"></div>
+      <div class="save-controls"></div>
+    </div>
+  </div>
+  <div class="comment-display">
+  </div>
+
+  <form class="comment-form">
+    <i class="far fa-image change-to-image-sending"></i>
+    <input class="comment-input" type="text" name ="content" placeholder= "Enter Message" required >
+    <button> <i class="fas fa-paper-plane"></i> Send</button>
+  </form>
+
+  <form class="image-form">
+    <i class="far fa-comment change-to-comment-sending"></i>
+    <input class="image-input" name="file" type="file" id="file" placeholder="Enter an image" required>
+    <button> <i class="fas fa-paper-plane"></i> Send</button>
+  </form>
+</div>
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.0/moment.min.js" integrity="sha512-Izh34nqeeR7/nwthfeE0SI3c8uhFSnqxV0sI9TvTcXiFJkMd6fB644O64BRq2P/LA/+7eRvCw4GmLsXksyTHBg==" crossorigin="anonymous"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+
+  const userData = <%- JSON.stringify(user) %>;
+  const socket = io.connect('http://localhost:3000');
+  const commentDisplay = document.querySelector('.comment-display');
+  const chatroomId = <%- JSON.stringify(chatroomId) %>;
+
+
+  const commentForm = document.querySelector('.comment-form');
+  const imageForm = document.querySelector('.image-form');
+  // auto focus.
+  commentForm.content.focus();
+
+  const commentsArray = [];
+
+
+  // called once.
+  // ------------------------INITIAL-SETUP-----------------------------START
+  initChatroom();
+  async function initChatroom() {
+    const data = await fetch(`/updateroom/${ chatroomId }`);
+    const chatroom = await data.json();
+    
+    //set title
+    document.querySelector('.title').textContent = chatroom.title;
+
+    //set number of users
+    document.querySelector('.user-number').innerHTML =
+      `<i class="fas fa-users"></i> <p class="number_of_ppl"> ${ chatroom.roomMember.length }</p>`;
+    //set number of comments
+    document.querySelector('.comment-number').innerHTML = 
+      `<i class="fas fa-comment"></i> <p class="number_of_ppl">${ chatroom.comments.length }</p>`;
+
+    // save control
+    saveControlHandler();
+    //refresh display
+    commentDisplay.innerHTML = '';
+
+    if (chatroom.comments.length > 0) {
+      chatroom.comments.forEach( async (comment) => {
+        if (comment.content){
+          const date = moment(comment.sentDate).fromNow();
+          const commentData = `
+            <div class="comment">
+              <strong class="username">${ comment.userName } :</strong>
+              <p class="content">${ comment.content }</p>
+              <p class="date" data-date="${ comment.sentDate }" >${ date }</p>
+            </div>
+          `;
+          commentsArray.push(comment.sentDate);
+          commentDisplay.innerHTML += commentData;
+        }
+        if (comment.filename){
+          const date = moment(comment.sentDate).fromNow();
+          const commentData = `
+          <div class="comment">
+            <strong class="username">${ comment.userName } :</strong>
+            <div class="content has-file flash" data-filename='${ comment.filename }'>image loading...</div>
+            <p class="date" data-date="${ comment.sentDate }">${ date }</p>
+          </div>
+          `;
+          commentsArray.push(comment.sentDate);
+          commentDisplay.innerHTML += commentData;
+        }
+      });
+      commentDisplay.scrollTop = commentDisplay.scrollHeight;
+    } else {
+      const msg = '<p class="no-result">No comments to display</p>';
+      commentDisplay.innerHTML += msg;
+    }
+
+    //loading actual image.
+    const contentIncludeFile = document.querySelectorAll('.has-file');
+    console.log('array of imageFiles', contentIncludeFile);
+    contentIncludeFile.forEach( async (content) => {
+      const filename = content.dataset.filename;
+      console.log(filename);
+      const res = await fetch(`/loadingImage/${ filename }`);
+      const data = await res.json();
+      content.innerHTML = data;
+      content.classList.remove('flash');
+    });
+
+    console.log('comments has been set.');
+  }
+  //------------------INITIAL SETUP----------------END
+
+
+  //-----------------TIME STAMP UPDATE-------------START
+  setInterval(timeStampUpdate, 1000 * 60);
+  function timeStampUpdate() {
+    const allDateDOMs = document.querySelectorAll('.date');
+    allDateDOMs.forEach((dateDOM) => {
+      const oldDate = dateDOM.dataset.date;
+      const newDate = moment(oldDate).fromNow();
+      dateDOM.textContent = newDate; 
+    });
+    console.log('timestamp updated.');
+  }
+  //-------------------TIME STAMP UPDATE-----------END
+
+
+  //---------------SAVE CONTROLS-------------------START
+  async function saveControlHandler() {
+    const data = await fetch(`/updateroom/${ chatroomId }`);
+    const chatroom = await data.json();
+
+    const saveControls = document.querySelector('.save-controls');
+    
+    if( chatroom.idsSavingThisRoom.includes(userData._id) ) {
+      const removeBtnDOM = '<span class="remove-btn"><i class="fas fa-bookmark"></i> saved</span>';
+      saveControls.innerHTML = removeBtnDOM;
+      
+      const removeBtn = document.querySelector('.remove-btn');
+      removeBtn.addEventListener('click', async () => {
+        const userId = userData._id;
+        const res = await fetch('/removeFromFavouriteRooms', {
+          method: 'POST',
+          body: JSON.stringify({userId,chatroomId}),
+          headers: { 'Content-Type': 'application/json' }
+        });
+        const data = await res.json();
+        console.log(data);
+        saveControlHandler();
+      });
+    } else {
+      const addBtnDOM = '<span class="add-btn"><i class="far fa-bookmark"></i> unsaved</span>';
+      saveControls.innerHTML = addBtnDOM;
+      
+      const addBtn = document.querySelector('.add-btn');
+      addBtn.addEventListener('click', async () => {
+        const userId = userData._id;
+        const res = await fetch('/addToFavouriteRooms', {
+          method: 'POST',
+          body: JSON.stringify({userId, chatroomId}),
+          headers: { 'Content-Type': 'application/json' }
+        });
+        const data = await res.json();
+        console.log(data);
+        saveControlHandler();
+      })
+    }
+  }
+  //-------------SAVE-CONTROL-HANDLER--------------END
+
+
+
+  //-----------------------UPDATE DATA----------------------START
+  //WILL BE DELETED MAYBE 
+  updateChatroom();
+  setInterval(updateChatroom, 1000 * 60);
+  async function updateChatroom () {
+    const data = await fetch(`/updateroom/${ chatroomId }`);
+    const chatroom = await data.json();
+    //set number of users
+    document.querySelector('.user-number').innerHTML =
+      `<i class="fas fa-users"></i> <p class="number_of_ppl"> ${ chatroom.roomMember.length }</p>`;
+    //set number of comments
+    document.querySelector('.comment-number').innerHTML = 
+      `<i class="fas fa-comment"></i> <p class="number_of_ppl">${ chatroom.comments.length }</p>`;
+  }
+  //   //save controls
+  //   const saveControls = document.querySelector('.save-controls');
+  //   if( chatroom.idsSavingThisRoom.includes(userData._id) ) {
+  //     const saveControlBtn = '<span class="remove-btn"><i class="fas fa-bookmark"></i> saved</span>';
+  //     saveControls.innerHTML = saveControlBtn;
+  //     const removeBtn = document.querySelector('.remove-btn');
+  //     removeBtn.addEventListener('click', async () => {
+  //       const userId = userData._id;
+  //       const res = await fetch('/removeFromFavouriteRooms', {
+  //         method: 'POST',
+  //         body: JSON.stringify({userId,chatroomId}),
+  //         headers: {'Content-Type': 'application/json'}
+  //       });
+  //       const data = await res.json();
+  //       console.log(data);
+  //       updateChatroom();
+  //     })
+  //   } else {
+  //     const saveControlBtn = '<span class="add-btn"><i class="far fa-bookmark"></i> unsaved</span>';
+  //     saveControls.innerHTML = saveControlBtn;
+  //     const addBtn = document.querySelector('.add-btn');
+  //     addBtn.addEventListener('click', async () => {
+  //       const userId = userData._id;
+  //       const res = await fetch('/addToFavouriteRooms', {
+  //         method: 'POST',
+  //         body: JSON.stringify({userId,chatroomId}),
+  //         headers: { 'Content-Type': 'application/json' }
+  //       });
+  //       const data = await res.json();
+  //       console.log(data);
+  //       updateChatroom();
+  //     })
+  //   }
+  // }
+  // -------------------UPDATE DATA------------------------------END
+
+
+  //get rid of userData from params
+  socket.emit('joinRoom', {chatroomId});
+
+
+
+  // FORM EVENTS-----------------------------
+
+  const changeToImageFormBtn = document.querySelector('.change-to-image-sending');
+  const changeToCommentFormBtn = document.querySelector('.change-to-comment-sending');
+
+  changeToImageFormBtn.addEventListener('click', () => {
+    commentForm.style.display = 'none';
+    imageForm.style.display = 'flex';
+  });
+
+  changeToCommentFormBtn.addEventListener('click', () => {
+    commentForm.style.display = 'flex';
+    imageForm.style.display = 'none';
+  });
+
+  commentForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    commentForm.content.focus();
+
+    socket.emit('chat', {
+      userName: userData.userName,
+      content: commentForm.content.value,
+      room: chatroomId,
+    });
+    commentForm.content.value = '';
+  });
+
+  imageForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    const file = imageForm.file.files[0];
+    formData.append('file', file);
+
+    console.log('file info:', file);
+
+    socket.emit('file', {
+      userName: userData.userName,
+      file: file,
+      room: chatroomId
+    });
+
+    const res = await fetch('/saveImage', {
+      method: 'POST',
+      body: formData,
+    });
+    const data = await res.json();
+    console.log('sent from app.js as responce', data);
+    const filename = data.filename;
+    const userName = userData.userName;
+
+    fetch('/updateAfterSaveImage', {
+      method: 'POST',
+      body: JSON.stringify({userName, filename, chatroomId}),
+      headers: {'Content-Type': 'application/json'}
+    });
+    imageForm.file.value = '';
+  });
+
+
+  //SOCKET ON EVENTS--------------------
+
+  socket.on('file', (data) => {
+    console.log(data.file);
+    const pureDate = new Date();
+    const date = moment(pureDate).fromNow();
+    // convert arrayBuffer into Blob to be put in createObjectURL().
+    const blob = new Blob([data.file]);
+    console.log('blob:', blob);
+    const objectURL = window.URL.createObjectURL(blob);
+    console.log('objectURL', objectURL);
+    const commentData = `
+          <div class="comment">
+            <strong class="username">${ data.userName } :</strong>
+            <div class="content has-file"><img class="image" src='${ objectURL }'></div>
+            <p class="date" data-date="${ pureDate }">${ date }</p>
+          </div>
+          `;
+    commentsArray.push(pureDate);
+    commentDisplay.innerHTML += commentData;
+
+    const noResult = document.querySelector('.no-result');
+    if( noResult ) {
+      noResult.style.display = 'none';
+    }
+  });
+  
+  socket.on('chat', (data) => {
+    console.log({data});
+    const pureDate = new Date();
+    const date = moment(pureDate).fromNow();
+    const commentData = `
+      <div class="comment">
+        <strong class="username">${ data.userName } : </strong>
+        <p class="content">${ data.content }</p>
+        <p class="date" data-date="${ pureDate }">${ date }</p>
+      </div>
+    `;
+
+    commentsArray.push(pureDate);
+    commentDisplay.innerHTML += commentData;
+
+    const noResult = document.querySelector('.no-result');
+    if( noResult ) {
+      noResult.style.display = 'none';
+    }
+  })
+
+
+  socket.on('announcement', (data) => {
+    console.log(data);
+    const announcement = `
+      <div class="announcement">
+        <strong>${ data.userName } : </strong>
+        <p>${ data.content }</p>
+      </div>
+    `;
+    commentDisplay.innerHTML += announcement;
+  })
+
+
+</script>
+
+<%- include('partials/footer') -%>
