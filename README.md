@@ -2,7 +2,7 @@
 
  This is a real-time chat app where everyone can interact one another!
  
- https://chocolate-romantic-ridge.glitch.me.blank
+ https://chocolate-romantic-ridge.glitch.me
  
  +feature 
  
