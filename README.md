@@ -2,8 +2,9 @@
 
  This is a real-time chat app where everyone can interact one another!
  
- -feature-
-  realtime interaction - socket.io
-  user authentication - cookie-parser, jsonwebtoken, bcrypt, validator
-  image uploading - gridFs crypto
+ const feature = {
+  realtimeInteraction: socket.io,
+  userAuthentication: [cookie_parser, jsonwebtoken, validator],
+  imageUploading: [gridFs, crypto]
+ }
   
