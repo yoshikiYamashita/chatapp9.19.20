@@ -4,12 +4,14 @@
  
  https://chatapp919.glitch.me/
  
- +feature: dependencies
+ ----feature: dependencies-----
  
  -realtime interaction: socket.io
  
  -user authentication: cookie-parser, jsonwebtoken, bcrypt, validator
  
  -image uploading: mongoose, gridFs
+ 
+ ------------------------------
  
  
