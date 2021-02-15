@@ -32,7 +32,7 @@
 <script>
 
   const userData = <%- JSON.stringify(user) %>;
-  const socket = io.connect('http://localhost:3000');
+  const socket = io.connect('YOUR_PORT_ex.localhost:3000');
   const commentDisplay = document.querySelector('.comment-display');
   const chatroomId = <%- JSON.stringify(chatroomId) %>;
 
