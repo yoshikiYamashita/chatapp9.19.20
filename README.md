@@ -1,10 +1,10 @@
-# chatapp9.19.20
+# Chatapp9.19.20 (Express-mongoDB app)
 
  This is a real-time chat app where everyone can interact one another!
  
  https://chatapp919.glitch.me/
  
- +feature 
+ +feature: dependencies
  
  -realtime interaction: socket.io
  
