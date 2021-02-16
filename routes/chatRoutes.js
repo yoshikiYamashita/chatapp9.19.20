@@ -11,6 +11,7 @@ const router = Router();
 router.get('/getroomlist/:statusOption', chatController.roomlist_get);
 router.get('/chatroom/:chatroomId', chatController.room_get);
 router.get('/updateroom/:chatroomId', chatController.update_room_get);
+router.get('/loadingImage/:filename', chatController.loading_image);
 router.get('*', chatController.not_found);
 
 
@@ -19,6 +20,7 @@ router.post('/createchatroom', chatController.create_chatroom_post);
 router.post('/addToFavouriteRooms', chatController.add_to_favourite_rooms_post);
 router.post('/removeFromFavouriteRooms', chatController.remove_from_favourite_rooms_post);
 router.post('/changeName', chatController.change_name);
+router.post('/updateAfterSaveImage', chatController.update_after_save_image);
 
 //delete
 router.delete('/deleteChatroom', chatController.delete_chatroom);

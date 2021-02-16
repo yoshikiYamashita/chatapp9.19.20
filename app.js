@@ -11,9 +11,7 @@ const multer = require('multer');
 const GridFsStorage = require('multer-gridfs-storage');
 const Grid = require('gridfs-stream');
 
-
 //importing modules
-
 // routes
 const authRoutes = require('./routes/authRoutes');
 const chatRoutes = require('./routes/chatRoutes');
@@ -87,33 +85,10 @@ const upload = multer({ storage });
 
 
 
-app.get('/loadingImage/:filename', async (req, res) => {
-  const id= req.params.filename;
-  const data = await gfs.files.findOne({filename: id});
-  const readstream = gfs.createReadStream({filename: data.filename});
-  const bufs = [];
-  readstream.on('data', function(chunk) {
-    bufs.push(chunk);
-  }).on('end', function() {
-    const fbuf = Buffer.concat(bufs);
-    const base64ed = (fbuf.toString('base64'));
-    res.json(`<img class="image" src="data:${data.contentType};base64,${base64ed}">`);
-  })
-
-});
-
 app.post('/saveImage', upload.single('file'), (req, res) => {
   console.log('file received :', req.file);
   res.json(req.file);
 });
-
-app.post('/updateAfterSaveImage', async (req,res) => {
-  const { userName, filename, chatroomId } = req.body;
-  console.log('filename,chatroomid from /updateaftersaveimage',userName, filename, chatroomId);
-  Chatroom.saveComment(chatroomId, {userName, filename});
-});
-
-
 
 
 // socket events

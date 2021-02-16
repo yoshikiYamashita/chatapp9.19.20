@@ -3,6 +3,7 @@
 const Chatroom = require('../models/Chatroom');
 const { User } = require('../models/User');
 
+
 //home
 module.exports.roomlist_get = async (req, res) => {
   const statusOption = req.params.statusOption;
@@ -164,6 +165,27 @@ module.exports.delete_chatroom = async (req, res) => {
   } catch(err) {
     console.log(err);
   }
+}
+
+module.exports.loading_image = async (req, res) => {
+  const { gfs } = require('../app');
+  const id = req.params.filename;
+  const data = await gfs.files.findOne({filename: id});
+  const readstream = gfs.createReadStream({filename: data.filename});
+  const bufs = [];
+  readstream.on('data', function(chunk) {
+    bufs.push(chunk);
+  }).on('end', function() {
+    const fbuf = Buffer.concat(bufs);
+    const base64ed = (fbuf.toString('base64'));
+    res.json(`<img class="image" src="data:${data.contentType};base64,${base64ed}">`);
+  });
+}
+
+module.exports.update_after_save_image = (req, res) => {
+  const { userName, filename, chatroomId } = req.body;
+  console.log('filename,chatroomid from /updateaftersaveimage',userName, filename, chatroomId);
+  Chatroom.saveComment(chatroomId, {userName, filename});
 }
 
 module.exports.not_found = (req, res) => {
