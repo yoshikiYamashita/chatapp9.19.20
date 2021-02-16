@@ -32,7 +32,7 @@
 <script>
 
   const userData = <%- JSON.stringify(user) %>;
-  const socket = io.connect('http://localhost:3000');
+  const socket = io.connect('YOUR_PORT_ex.localhost:3000');
   const commentDisplay = document.querySelector('.comment-display');
   const chatroomId = <%- JSON.stringify(chatroomId) %>;
 
@@ -190,40 +190,8 @@
     document.querySelector('.comment-number').innerHTML = 
       `<i class="fas fa-comment"></i> <p class="number_of_ppl">${ chatroom.comments.length }</p>`;
   }
-  //   //save controls
-  //   const saveControls = document.querySelector('.save-controls');
-  //   if( chatroom.idsSavingThisRoom.includes(userData._id) ) {
-  //     const saveControlBtn = '<span class="remove-btn"><i class="fas fa-bookmark"></i> saved</span>';
-  //     saveControls.innerHTML = saveControlBtn;
-  //     const removeBtn = document.querySelector('.remove-btn');
-  //     removeBtn.addEventListener('click', async () => {
-  //       const userId = userData._id;
-  //       const res = await fetch('/removeFromFavouriteRooms', {
-  //         method: 'POST',
-  //         body: JSON.stringify({userId,chatroomId}),
-  //         headers: {'Content-Type': 'application/json'}
-  //       });
-  //       const data = await res.json();
-  //       console.log(data);
-  //       updateChatroom();
-  //     })
-  //   } else {
-  //     const saveControlBtn = '<span class="add-btn"><i class="far fa-bookmark"></i> unsaved</span>';
-  //     saveControls.innerHTML = saveControlBtn;
-  //     const addBtn = document.querySelector('.add-btn');
-  //     addBtn.addEventListener('click', async () => {
-  //       const userId = userData._id;
-  //       const res = await fetch('/addToFavouriteRooms', {
-  //         method: 'POST',
-  //         body: JSON.stringify({userId,chatroomId}),
-  //         headers: { 'Content-Type': 'application/json' }
-  //       });
-  //       const data = await res.json();
-  //       console.log(data);
-  //       updateChatroom();
-  //     })
-  //   }
-  // }
+  
+  
   // -------------------UPDATE DATA------------------------------END
 
 
