@@ -703,4 +703,8 @@ footer .container .app-title h1 {
   font-size: 1.3em;
   margin-bottom: 10px;
 }
+
+footer .container .app-title p {
+  margin-bottom: 3px;
+}
 /*# sourceMappingURL=base.css.map */

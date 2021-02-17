@@ -704,6 +704,10 @@ footer .container .app-title h1 {
   margin-bottom: 10px;
 }
 
+footer .container .app-title p {
+  margin-bottom: 3px;
+}
+
 @media (max-width: 960px) {
   header {
     font-size: 20px;

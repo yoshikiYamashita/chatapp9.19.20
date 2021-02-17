@@ -65,14 +65,12 @@
   deleteAccountForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const password = deleteAccountForm.password.value;
-    console.log('password', password);
     const res = await fetch('/deleteUser', {
       method: 'DELETE', 
       body: JSON.stringify({userInfo, password}),
       headers: {'Content-Type': 'application/json'}
     });
     const data = await res.json();
-    console.log({data});
     if(data.msg === 'incorrect password') {
       const output = document.querySelector('.error.password');
       output.textContent = data.msg;
@@ -104,7 +102,7 @@
     });
 
   } else if ( yourRooms.length < 1 ){
-    const DOM = "<div class='no-result'>You haven't created any</div>";
+    const DOM = "<div class='no-result'>You haven't created any rooms yet</div>";
     yourRoomList.innerHTML += DOM;
   }
 
