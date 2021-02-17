@@ -17,11 +17,11 @@
  ----purpose and what I learnt----
  
  I've been getting used to using Node.js so it was time to try to create an original application on my own.
- I learnt a lot through creating this app especially finding things I didn't know through planning the whole structure from scratch.
- sometimes it didn't work as I initially imagined, but made it work one way or another.
- The hardest part was dealing with image files. arrayBuffer, blob, there were so many things I haven't been throgh！
- Although this app contains quite a lot of scss files, I don't really enjoy coding style sheets, so it will be nice if I use some lovely frameworks.
- I was learning React while creating this app. so next time I create my own app, I will go with MERN-stack.
+ I learnt a lot through creating this app, especially that I started recognising how the whole application works from planning the structure from scratch.
+ sometimes it didn't work as I initially imagined, searched on Google but didn't match the exact one, yet I'm glad that I made it work one way or another. Simultaneously there are still things that I can improve myself.
+ The hardest part was dealing with image files. arrayBuffer, blob, there were so many things I haven't been throgh!
+ As for the design, although this app contains quite a lot of scss files, I didn't really enjoy coding style sheets, so it will be nice if I use some lovely frameworks like Bootstrap or Materialize.
+ While creating this app, I was learning React. so next time I create my own app, I will go with MERN-stack.
  
  ----目的と学んだこと----
  
